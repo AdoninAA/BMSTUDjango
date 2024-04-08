@@ -1,10 +1,9 @@
 from django.http import HttpResponse
 from django.urls import reverse
-from django.shortcuts import render
 
 def index(request):
-    bugs_page_url = reverse('quality_control:bugs_page')
-    features_page_url = reverse('quality_control:features_page')
+    bugs_page_url = reverse('quality_control:bugs_list')
+    features_page_url = reverse('quality_control:features_list')
     html = f"<h1>Система контроля качества</h1><a href='{bugs_page_url}'>Список всех багов</a><br/><a href='{features_page_url}'>Запросы на улучшение</a>"
     return HttpResponse(html)
 
