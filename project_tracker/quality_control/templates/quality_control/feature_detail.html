@@ -1,0 +1,9 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>Детали бага {{featurerequest.id}}</h1><h2>{{featurerequest.title}}</h2><p>{{featurerequest.description}}<p/>
+    <p>Статус: {{featurerequest.status}}</p>
+    <p>Приоритет: {{featurerequest.priority}}</p>
+    <p>Cвязанный проект: {{featurerequest.project}}</p>
+    <p>Cвязаная задачи: {{featurerequest.task}}</p>
+{% endblock %}

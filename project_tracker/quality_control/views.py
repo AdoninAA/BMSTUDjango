@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.urls import reverse
+from django.shortcuts import render
 
+from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.generic import DetailView
 
@@ -8,71 +10,41 @@ from .models import BugReport, FeatureRequest
 
 
 def index(request):
-    bugs_page_url = reverse('quality_control:bugs_list')
-    features_page_url = reverse('quality_control:features_list')
-    html = f"<h1>Система контроля качества</h1><a href='{bugs_page_url}'>Список всех багов</a><br/><a href='{features_page_url}'>Запросы на улучшение</a>"
-    return HttpResponse(html)
+    return render(request, 'quality_control/index.html')
 
 
 def bug_list(request):
     bugs = BugReport.objects.all()
-    bugs_html = '<h1>Список bug report</h1><ul>'
-    for bug in bugs:
-        bugs_html += f'<li>{bug.title}<br/>Статус: {bug.status}<br/><a href="{bug.id}/">Детали бага {bug.id}</a></li>'
-    bugs_html += '</ul>'
-    return HttpResponse(bugs_html)
+    return render(request, 'quality_control/bugs_list.html', {'bugs_list': bugs})
 
 
 def feature_list(request):
     features = FeatureRequest.objects.all()
-    features_html = '<h1>Список запросов на улучшение</h1><ul>'
-    for feature in features:
-        features_html += f'<li>{feature.title}<br/>Статус: {feature.status}<br/><a href="{feature.id}/">Детали улучшения {feature.id}</a></li>'
-    features_html += '</ul>'
-    return HttpResponse(features_html)
+    return render(request, 'quality_control/feature_list.html', {'features': features})
 
 
 def bug_detail(request, bug_id):
-    return HttpResponse(f"<h1>Детали бага {bug_id}</h1>")
+    bug = get_object_or_404(BugReport, id=bug_id)
+    return render(request, 'quality_control/bugs_detail.html', {'bug': bug})
 
 
 def feature_id_detail(request, feature_id):
-    return HttpResponse(f"<h1>Детали улучшения {feature_id}</h1>")
+    feature = get_object_or_404(FeatureRequest, id=feature_id)
+    return render(request, 'quality_control/feature_detail.html', {'feature': feature})
 
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
-        bugs_page_url = reverse('quality_control:bugs_list')
-        features_page_url = reverse('quality_control:features_list')
-        html = f"<h1>Система контроля качества</h1><a href='{bugs_page_url}'>Список всех багов</a><br/><a href='{features_page_url}'>Запросы на улучшение</a>"
-        return HttpResponse(html)
+        return render(request, 'quality_control/index.html')
 
 
 class BugsDetailView(DetailView):
     model = BugReport
     pk_url_kwarg = 'bug_id'
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        bug = self.object
-        response_html = f"<h1>Детали бага {bug.id}</h1><h2>{bug.title}</h2><p>{bug.description}<p/>"
-        response_html += f'<p>Статус: {bug.status}</p>'  # <ul>'
-        response_html += f'<p>Приоритет: {bug.priority}</p>'
-        response_html += f'<p>Cвязанный проект: {bug.project}</p>'
-        response_html += f'<p>Cвязаная задачи: {bug.task}</p>'
-        return HttpResponse(response_html)
+    template_name = 'quality_control/bugs_detail.html'
 
 
 class FeaturesDetailView(DetailView):
-    model = BugReport
+    model = FeatureRequest
     pk_url_kwarg = 'feature_id'
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        feature = self.object
-        response_html = f"<h1>Детали бага {feature.id}</h1><h2>{feature.title}</h2><p>{feature.description}<p/>"
-        response_html += f'<p>Статус: {feature.status}</p>'  # <ul>'
-        response_html += f'<p>Приоритет: {feature.priority}</p>'
-        response_html += f'<p>Cвязанный проект: {feature.project}</p>'
-        response_html += f'<p>Cвязаная задачи: {feature.task}</p>'
-        return HttpResponse(response_html)
+    template_name = 'quality_control/feature_detail.html'
