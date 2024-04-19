@@ -48,3 +48,28 @@ class FeaturesDetailView(DetailView):
     model = FeatureRequest
     pk_url_kwarg = 'feature_id'
     template_name = 'quality_control/feature_detail.html'
+
+from django.shortcuts import render, redirect
+from .forms import BugReportForm, FeatureRequestForm
+
+
+def create_bugreport(request):
+    if request.method == 'POST':
+        form = BugReportForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('quality_control:bugs_list')
+    else:
+        form = BugReportForm()
+    return render(request, 'quality_control/bug_report_form.html', {'form': form})
+
+
+def create_featurerequest(request):
+    if request.method == 'POST':
+        form = FeatureRequestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('quality_control:feature_list')
+    else:
+        form = FeatureRequestForm()
+    return render(request, 'quality_control/feature_request_form.html', {'form': form})
